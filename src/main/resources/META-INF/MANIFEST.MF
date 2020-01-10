@@ -1,0 +1,2 @@
+Main-Class: division.server.DivisionServer
+PreMain-Class: division.server.DivisionAgent

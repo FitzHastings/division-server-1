@@ -102,26 +102,26 @@ public class PersonalAccount extends HttpServlet {
             Client.out(saveCommand(request, showDocs(request), command),response);
             break;
           case PREVIEWDOCUMENT:
-            saveCommand(request, Client.OK(new JSONObject()), command);
+            saveCommand(request, Client.OK(Map.of()), command);
             getDocument(false, request, response);
             break;
           case PREVIEWACT:
-            saveCommand(request, Client.OK(new JSONObject()), command);
+            saveCommand(request, Client.OK(Map.of()), command);
             getAct(request, response);
             break;
           case DOWNLOADDOCUMENT:
-            saveCommand(request, Client.OK(new JSONObject()), command);
+            saveCommand(request, Client.OK(Map.of()), command);
             getDocument(true, request, response);
             break;
           case DOWNLOADZIP:
-            saveCommand(request, Client.OK(new JSONObject()), command);
+            saveCommand(request, Client.OK(Map.of()), command);
             getDocument(true, request, response);
             break;
           case GETCONTRACTS:
             Client.out(saveCommand(request, getContracts(request), command),response);
             break;
           case LOGOUT:
-            saveCommand(request, Client.OK(new JSONObject()), command);
+            saveCommand(request, Client.OK(Map.of()), command);
             Client.logout(request, response);
             break;
         }
@@ -166,7 +166,7 @@ public class PersonalAccount extends HttpServlet {
   }
   
   private Map getRequestData(HttpServletRequest request) throws Exception {
-    PropertyMap o = ObjectLoader.getMap(Client.Class("Request"), Client.getData(request).get("id"));
+    PropertyMap o = ObjectLoader.getMap(Client.Class("Request"), (Integer)Client.getData(request).get("id"));
     o.setValue("equipments", ObjectLoader.getList(DBFilter.create("Equipment").AND_IN("id", o.getValue("equipments", Integer[].class)),
             "id",
             "identity_value_name",
@@ -222,9 +222,9 @@ public class PersonalAccount extends HttpServlet {
             "address=query:(SELECT name FROM [EquipmentFactorValue] WHERE [EquipmentFactorValue(equipment)]=[Equipment(id)] AND [EquipmentFactorValue(factor)]=(SELECT id FROM [Factor] WHERE name ilike '%адрес установки%'))").stream().forEach(e -> {
               if(!e.isNull("address") && e.getString("address").startsWith("json"))
                 e.setValue("address", PropertyMap.fromJson(e.getString("address").substring(4)).getString("title"));
-              equipments.add(JSONObject.fromObject(e.toJson()));
+              equipments.add(e.toJson());
             });
-    return Client.OK(new JSONObject().accumulate("equipments", equipments));
+    return Client.OK(Map.of("equipments", equipments));
   }
   
   private Map saveCommand(HttpServletRequest request, Map json, Command command) throws Exception {
@@ -519,7 +519,7 @@ public class PersonalAccount extends HttpServlet {
     return map;
   }
   
-  private Map showDocs(HttpServletRequest request) throws RemoteException {
+  private Map showDocs(HttpServletRequest request) throws Exception {
     Integer[] contracts = new Integer[0];
     Map currentData = Client.getData(request);
     for(Object id:(List)currentData.get("contract"))

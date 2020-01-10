@@ -17,8 +17,58 @@
                     <target>11</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>
+                            src/main/resources/META-INF/MANIFEST.MF
+                        </manifestFile>
+                        <manifest>
+                            <addClasspath>false</addClasspath>
+                            <mainClass>
+                                division.server.DivisionServer
+                            </mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>division-utils</id>
+            <url>https://raw.github.com/dnc-soft/division-utils/repository</url>
+        </repository>
+        <repository>
+            <id>division-mapping</id>
+            <url>https://raw.github.com/dnc-soft/division-mapping/repository</url>
+        </repository>
+        <repository>
+            <id>division-interfaces</id>
+            <url>https://raw.github.com/dnc-soft/division-interfaces/repository</url>
+        </repository>
+        <repository>
+            <id>division-document</id>
+            <url>https://raw.github.com/dnc-soft/division-document/repository</url>
+        </repository>
+        <repository>
+            <id>division-impl</id>
+            <url>https://raw.github.com/dnc-soft/division-impl/repository</url>
+        </repository>
+        <repository>
+            <id>division-plugin-interfaces</id>
+            <url>https://raw.github.com/dnc-soft/division-plugin-interfaces/repository</url>
+        </repository>
+        <repository>
+            <id>division-plugin-impl</id>
+            <url>https://raw.github.com/dnc-soft/division-plugin-impl/repository</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -31,16 +81,6 @@
             <version>2.3</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>9.4.14.v20181114</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>9.4.14.v20181114</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-all</artifactId>
             <version>5.15.9</version>
@@ -50,21 +90,93 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.9.9.3</version>
         </dependency>
+
         <dependency>
             <groupId>division</groupId>
             <artifactId>division-utils</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.1</version>
         </dependency>
+
         <dependency>
             <groupId>division</groupId>
             <artifactId>division-mapping</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>division</groupId>
+                    <artifactId>division-utils</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+
+        <dependency>
+            <groupId>division</groupId>
+            <artifactId>division-interfaces</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>division</groupId>
+            <artifactId>division-document</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20190722</version>
+        </dependency>
+        <dependency>
+            <groupId>division</groupId>
+            <artifactId>division-impl</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.8.jre7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.4.15.v20190215</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>9.4.15.v20190215</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>division</groupId>
+            <artifactId>division-plugin-interfaces</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>division</groupId>
+            <artifactId>division-plugin-impl</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.37</version>
+        </dependency>
+
     </dependencies>
 
 

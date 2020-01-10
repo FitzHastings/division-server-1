@@ -1,15 +1,13 @@
 package division.server;
 
-import bum.interfaces.Server;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
-import java.util.Vector;
-import net.sf.json.JSONObject;
-import org.json.JSONObject;
 
 public class TCPDivision {
   private final ServerSocket server;
@@ -38,7 +36,7 @@ public class TCPDivision {
     
     @Override
     public void run() {
-      BufferedReader in = null;
+      /*BufferedReader in = null;
       PrintWriter out = null;
       String msg;
       try {
@@ -73,7 +71,7 @@ public class TCPDivision {
         in = null;
         out = null;
         try{clientSocket.close();}catch(Exception ex){}
-      }
+      }*/
     }
   }
 }

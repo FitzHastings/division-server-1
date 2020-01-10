@@ -4,15 +4,21 @@ import bum.pool.DBController;
 import bum.realizations.ServerImpl;
 import bum.util.DivisionClientSocketFactory;
 import bum.util.DivisionServerSocketFactory;
+import com.sun.javafx.reflect.ReflectUtil;
 import conf.P;
 import division.fx.PropertyMap;
 import division.server.servlet.PersonalAccount;
-import division.util.ClassPathLoader;
 import division.util.TurnOffUtil;
 import division.util.Utility;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ScanResult;
 import mapping.MappingObject;
+import mapping.MappingObjectImpl;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.log4j.Logger;
+import org.codehaus.groovy.reflection.ReflectionUtils;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
@@ -28,12 +34,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.jar.JarEntry;
@@ -43,56 +49,9 @@ import java.util.jar.JarFile;
 public class DivisionServer {
   private static Server jetty_server;
   private static ExecutorService pool = Executors.newCachedThreadPool();
-  private static PropertyMap conf = PropertyMap.fromJsonFile("conf"+File.separator+"conf.json");
-  
-  @Autowired
-  private ApplicationContext context;
-  
-  /*private void ddd() {
-    try {
-      
-      
-      
-      
-      ApplicationContext context = new FileSystemXmlApplicationContext("conf/spring.xml");
-      TestBean tb = context.getBean("TestBean", TestBean.class);
-      
-      
-      Hashtable env = new Hashtable();
-      env.put("com.sun.jndi.ldap.connect.pool", "true");
-      env.put(Context.PROVIDER_URL, "");
-      env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-      DirContext ctx = new InitialDirContext(env);
-      ctx.rebind("basic", tb);
-      
-      //System.out.println(tb.getMessage());
-    }catch(Exception ex) {
-      ex.printStackTrace();
-    }      
-  }*/
-  
-  
-  public static void main(String[] args) throws Exception {
-    
-    
 
-    
-    
-    /*new DivisionServer().ddd();
-    
-    
-    DirContext ic2 = new InitialDirContext();
-    TestBean tb = (TestBean) ic2.lookup("basic");
-    System.out.println(tb.getMessage());
-    
-    System.exit(0);*/
-    
-    /*for(int i=args.length-1;i>=0;i--) {
-      if(args[i].startsWith("config-file")) {
-        P.load(args[i].split("=")[1].trim());
-        args = (String[]) ArrayUtils.remove(args, i);
-      }
-    }*/
+
+  public static void main(String[] args) throws Exception {
     
     switch(args[0]) {
       case "update":
@@ -128,8 +87,7 @@ public class DivisionServer {
     pool.submit(() -> {
       Logger.getRootLogger().info("############### STARTING JETTY ON PORT "+P.Integer("jetty.port")+" ###################");
       
-      PropertyMap server = conf.getMap("jetty");
-      jetty_server = new Server(server.getInteger("port"));
+      jetty_server = new Server(P.Integer("jetty.port"));
       
       /*WebAppContext context = new ClasspathWebAppContext(new HashSet<>(publishedResources));
       context.setConfigurations(new Configuration[]{new ClasspathWebXmlConfiguration()});
@@ -140,12 +98,12 @@ public class DivisionServer {
       context.setClassLoader(Thread.currentThread().getContextClassLoader());*/
 
       ResourceHandler html_handler = new ResourceHandler();
-      html_handler.setResourceBase(server.getMap("html").getString("resource-base"));
+      html_handler.setResourceBase(P.String("html.resource-base"));
       html_handler.setDirectoriesListed(true);
 
       ServletContextHandler servlet_handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-      servlet_handler.setResourceBase(server.getMap("servlet").getString("resource-base"));
-      servlet_handler.setContextPath(server.getMap("servlet").getString("context-path"));
+      servlet_handler.setResourceBase(P.String("servlet.resource-base"));
+      servlet_handler.setContextPath(P.String("servlet.context-path"));
       servlet_handler.addServlet(new ServletHolder(new PersonalAccount()), "/pc");
 
       HandlerList handlerList = new HandlerList();
@@ -165,7 +123,7 @@ public class DivisionServer {
       try {
         jetty_server.start();
         jetty_server.join();
-        System.out.println("Listening port : " + server.getInteger("port"));
+        System.out.println("Listening port : " + P.Integer("jetty.port"));
       }catch(Exception ex) {
         Logger.getRootLogger().info("############### ERROR STARTING JETTY... ###################");
         Logger.getRootLogger().info(ex.getMessage());
@@ -175,31 +133,63 @@ public class DivisionServer {
       }
     });
   }
-  
+
   private void startServer() {
     try {
+
+      //Map<String,Object> map = P.Map("dispose-server");
       
-      
-      TurnOffUtil.kill(conf.getMap("dispose-server").getString("host"), conf.getMap("dispose-server").getInteger("port"), conf.getMap("dispose-server").getString("command"));
+      TurnOffUtil.kill(P.String("dispose-server.host"), P.Integer("dispose-server.port"), P.String("dispose-server.command"));
       Thread.sleep(2000);
-      TurnOffUtil.startTurnOffServer(conf.getMap("dispose-server").getInteger("port"), conf.getMap("dispose-server").getString("command"));
+      TurnOffUtil.startTurnOffServer(P.Integer("dispose-server.port"), P.String("dispose-server.command"));
+
+
+      //((List<String>)P.List("libs")).stream().flatMap(lib -> getJars(new File(lib)).stream()).forEach(jar -> DivisionAgent.addClassPath(jar));
+
+      /*for(String dir:(List<String>)P.List("libs"))
+        ClassPathLoader.addFile(new File(dir));*/
       
-      for(String dir:conf.getList("libs", String.class))
-        ClassPathLoader.addFile(new File(dir));
-      
-      File[] pluginlist = new File[0];
-      for(String plugin:conf.getList("plugins", String.class)) {
+      /*File[] pluginlist = new File[0];
+      for(String plugin:P.List("plugins", String.class)) {
         File f = new File(plugin);
         ClassPathLoader.addFile(f);
         if(f.isDirectory())
           pluginlist = (File[]) ArrayUtils.addAll(pluginlist, new File(plugin).listFiles((File pathname) -> !pathname.isDirectory() && pathname.getName().endsWith(".jar")));
         else pluginlist = (File[]) ArrayUtils.add(pluginlist, f);
       }
-      loadPlugins(pluginlist);
+      loadPlugins(pluginlist);*/
+
+      //try {
+
+
+      List<Class> classes = new ArrayList<>();
+
+      try (ScanResult implScanResult = new ClassGraph().whitelistPackages("bum.realizations").scan();
+           ScanResult interfaceScanResult = new ClassGraph().whitelistPackages("bum.interfaces").scan()) {
+
+        for(ClassInfo classInfo : implScanResult.getAllClasses()) {
+          Class cl = Class.forName(classInfo.getName());
+          if(cl.getSuperclass().equals(MappingObjectImpl.class))
+            classes.add(cl);
+        }
+
+        for(ClassInfo classInfo : interfaceScanResult.getAllClasses()) {
+          Class cl = Class.forName(classInfo.getName());
+          Class[] cll = cl.getInterfaces();
+          if(Arrays.asList(cl.getInterfaces()).contains(MappingObject.class))
+            classes.add(cl);
+        }
+      }
+        classes.stream().filter((interfaceClass) -> (interfaceClass.isInterface())).forEach((interfaceClass) -> {
+            classes.stream().filter((realizationclass) -> (!realizationclass.isInterface())).filter((realizationclass) -> (ArrayUtils.contains(realizationclass.getInterfaces(), interfaceClass))).forEach((realizationclass) -> {
+                DataBase.put(realizationclass, interfaceClass);
+            });
+        });
 
       DataBase.configure();
       
-      for(PropertyMap s:conf.getList("servers")) {
+      for(Map m:(List<Map>)P.List("servers")) {
+        PropertyMap s = PropertyMap.copy(m);
         System.setProperty("java.rmi.server.hostname", s.getString("host"));
         Registry registry = LocateRegistry.createRegistry(s.getInteger("rmi-port"));
         
@@ -327,7 +317,7 @@ public class DivisionServer {
           InvocationTargetException, NoSuchFieldException, IOException, ClassNotFoundException {
     if(pluginList == null)
       return;
-    Vector<Class> classes = new Vector<>();
+    /*List<Class> classes = new ArrayList<>();
     for(File plugin:pluginList) {
       if(plugin.exists()) {
         JarFile jarFile = new JarFile(plugin);
@@ -345,12 +335,19 @@ public class DivisionServer {
           }
         }
       }
-    }
-    
+    }*/
+
+    /*List<Class> classes = new ArrayList<>();
+    Reflections reflections = new Reflections("bum.realizations");
+    classes.addAll(reflections.getSubTypesOf(Object.class));
+
+    reflections = new Reflections("bum.interfaces");
+    classes.addAll(reflections.getSubTypesOf(Object.class));
+
     classes.stream().filter((interfaceClass) -> (interfaceClass.isInterface())).forEach((interfaceClass) -> {
       classes.stream().filter((realizationclass) -> (!realizationclass.isInterface())).filter((realizationclass) -> (ArrayUtils.contains(realizationclass.getInterfaces(), interfaceClass))).forEach((realizationclass) -> {
         DataBase.put(realizationclass, interfaceClass);
       });
-    });
+    });*/
   }
 }
