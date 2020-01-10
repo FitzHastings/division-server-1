@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="Windows-1251" standalone="no"?>
+<configuration>
+  <servers>
+    <server>
+      <name>division-server</name>
+      <host>192.168.1.137</host>
+      <rmi-port>7004</rmi-port>
+      <object-port>7005</object-port>
+    </server>
+    <server>
+      <name>division-server</name>
+      <host>127.0.0.1</host>
+      <rmi-port>7002</rmi-port>
+      <object-port>7003</object-port>
+    </server>
+  </servers>
+  <libs>
+    <dir>lib</dir>
+    <dir>dist/lib</dir>
+    <dir>plugins</dir>
+  </libs>
+  <plugins>
+    <dir>plugins</dir>
+    <file>dist/lib/division-impl.jar</file>
+    <file>dist/lib/division-interfaces.jar</file>
+  </plugins>
+  <messanger>
+    <protocol>tcp</protocol>
+    <host>127.0.0.1</host>
+    <port>61616</port>
+  </messanger>
+  <proxy-server>
+    <host/>
+    <port/>
+    <user/>
+    <password/>
+  </proxy-server>
+  <smtp>
+    <host>192.168.1.1</host>
+    <port>25</port>
+    <user>russo</user>
+    <password>janjakrusso</password>
+  </smtp>
+  <dispose>
+    <host>127.0.0.1</host>
+    <port>7000</port>
+    <command>dispose</command>
+  </dispose>
+  <broadcast>
+    <server-port>7001</server-port>
+  </broadcast>
+  <data-source>
+    <jdbc-name>jdbc\:postgresql</jdbc-name>
+    <driver-name>org.postgresql.Driver</driver-name>
+    <max-transactions>5</max-transactions>
+    <min-transactions>5</min-transactions>
+    <host>127.0.0.1</host>
+    <port>5432</port>
+    <database-name>Division-2.0</database-name>
+    <user>russo</user>
+    <password>janjakrusso</password>
+  </data-source>
+  <technical-break>
+    <time></time>
+  </technical-break>
+  <types>
+    <type name="ID">INT4</type>
+    <type name="Integer">INT4</type>
+    <type name="Integer[]">INTEGER[]</type>
+    <type name="Long">BIGINT</type>
+    <type name="Double">FLOAT</type>
+    <type name="String">VARCHAR</type>
+    <type name="Text">TEXT</type>
+    <type name="Boolean">BOOL</type>
+    <type name="Date">Date</type>
+    <type name="Timestamp">TIMESTAMP</type>
+    <type name="Properties">bytea</type>
+    <type name="Color">INTEGER</type>
+    <type name="byte[]">bytea</type>
+    <type name="Byte[]">bytea</type>
+    <type name="Period">VARCHAR</type>
+    <type name="BigDecimal">NUMERIC(10,2)</type>
+    <type name="CURRENT_TIMESTAMP">CURRENT_TIMESTAMP</type>
+    <type name="CURRENT_DATE">CURRENT_DATE</type>
+  </types>
+</configuration>

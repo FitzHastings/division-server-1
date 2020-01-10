@@ -1,0 +1,81 @@
+{
+  "servers": [
+    {
+      "name" : "division-server",
+      "host" : "192.168.1.178",
+      "rmi-port" : 7004,
+      "object-port" : 7005
+    },
+    {
+      "name" : "division-server",
+      "host" : "127.0.0.1",
+      "rmi-port" : 7002,
+      "object-port" : 7003
+    }
+  ],
+  "messanger" : {
+    "protocol" : "tcp",
+    "host" : "127.0.0.1",
+    "port" : 61616
+  },
+  "proxy-server" : {
+    "host" : "192.168.1.1",
+    "port" : 3128,
+    "user" : "",
+    "password" : ""
+  },
+  "smtp-server" : {
+    "host" : "smtp.masterhost.ru",
+    "port" : 25,
+    "user" : "mail@dnc.ru",
+    "password" : "1qaz2WSX3edc4RFV"
+  },
+  "dispose-server" : {
+    "host" : "127.0.0.1",
+    "port" : 7000,
+    "command" : "dispose"
+  },
+  "data-source" : {
+    "jdbc-name" : "jdbc:postgresql",
+    "driver-name" : "org.postgresql.Driver",
+    "max-transactions" : 5,
+    "min-transactions" : 5,
+    "host" : "localhost",
+    "port" : 5432,
+    "database-name" : "Division-2.0",
+    "user" : "rusico",
+    "password" : "janjakrusso"
+  },
+  "jetty" : {
+    "port" : 8088,
+    "html" : {"resource-base" : "html"},
+    "servlet" : {
+      "resource-base" : "servlets",
+      "context-path" : "/"
+    }
+  },
+  "libs" : ["lib", "plugins"],
+  "types" : [
+    {"name" : "ID",                "value" : "INT4"},
+    {"name" : "Integer",           "value" : "INT4"},
+    {"name" : "Integer[]",         "value" : "INTEGER[]"},
+    {"name" : "Long",              "value" : "BIGINT"},
+    {"name" : "Double",            "value" : "FLOAT"},
+    {"name" : "String",            "value" : "VARCHAR"},
+    {"name" : "Text",              "value" : "TEXT"},
+    {"name" : "Boolean",           "value" : "BOOL"},
+    {"name" : "Date",              "value" : "Date"},
+    {"name" : "LocalDate",         "value" : "Date"},
+    {"name" : "Timestamp",         "value" : "TIMESTAMP"},
+    {"name" : "LocalDateTime",     "value" : "TIMESTAMP"},
+    {"name" : "Properties",        "value" : "bytea"},
+    {"name" : "Map",               "value" : "bytea"},
+    {"name" : "Color",             "value" : "INTEGER"},
+    {"name" : "byte[]",            "value" : "bytea"},
+    {"name" : "Byte[]",            "value" : "bytea"},
+    {"name" : "Period",            "value" : "VARCHAR"},
+    {"name" : "BigDecimal",        "value" : "NUMERIC(10,2)"},
+    {"name" : "CURRENT_TIMESTAMP", "value" : "CURRENT_TIMESTAMP"},
+    {"name" : "CURRENT_DATE",      "value" : "CURRENT_DATE"}
+  ]
+}
